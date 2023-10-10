@@ -1,0 +1,55 @@
+- **root**
+    - **doc**
+        - **logs**
+        - **scheme**
+            - db_structure.md
+            - project_flow.md
+            - project_structure.md
+    - **src**
+        - **api**
+            - __ init __.py
+            - Dockerfile
+            - main.py
+            - requirements.txt
+        - **assets**
+            - actor.h
+            - dice.h
+            - inventory.h (?)
+            - maze.h
+        - **controller**
+            - __ init __.py
+            - actor.py
+            - inventory.py
+            - item.py
+            - save.py
+        - **db**
+            - **mongodb** (RENAME TO DB-NAME)
+                - **models**
+                    - __ init __.py
+                    - collections.py
+                    - document.py
+                - __ init __.py
+                - config.py  (yml)
+                - Dockerfile
+                - requirements.txt
+                - setup.py
+            - **postgresql** (RENAME TO DB-NAME)
+                - __ init __.py
+                - config.py  (yml)
+                - Dockerfile
+                - requirements.txt
+                - setup.py
+            - __ init __.py
+        - **game-engine**
+            - **mechanics**
+                - battle.h
+                - highscore.h
+                - inventory.h (?)
+                - level.h
+            - game.h
+            - main.cpp
+            - save.cpp
+        - **gui**
+    - .gitignore
+    - docker-compose.yml
+    - README.md
