@@ -1,20 +1,31 @@
 #pragma once
 
 #include "dice.h"
+#include "maze.h"
 #include "mechanics/inventory.h"
 
 #include <array>
+#include <map>
 #include <string>
 #include <vector>
 
 struct ActorPosition
 {
-    int x_coord, y_coord;
+public:
     inline ActorPosition(int x, int y)
     {
         x_coord = x;
         y_coord = y;
     }
+    void update_position(std::array<int, 2> new_pos)
+    {
+        x_coord += new_pos[0];
+        y_coord += new_pos[1];
+    }
+
+private:
+    int x_coord, y_coord;
+
 };
 
 class Actor 
@@ -46,13 +57,14 @@ public:
 
     int get_score() const { return score; }
     void set_score(int s) { score = s; } 
+    bool still_alive() const { return alive; }
 
     void move(std::string direction);
-    bool in_battle(std::array<int, 2> current_pos) const;
-    void update_stats();
+    bool in_battle(Cell current_pos) const { Cell::engage(current_pos); }
+    void reset_and_update();
     
     static constexpr std::array<int, 2> start_position = {0, 0};
-    
+
 protected:
     int score;
     Inventory inventory;
@@ -64,3 +76,13 @@ private:
 
 };
 
+class Enemy : public Actor
+{
+public:
+    Enemy(std::string name, int ap, int dp, int hp, int level, std::array<int, 2> pos = start_position);
+    virtual ~Enemy() = default;
+
+private:
+    static constexpr std::array<int, 2> start_position = {0, 0};
+
+}
