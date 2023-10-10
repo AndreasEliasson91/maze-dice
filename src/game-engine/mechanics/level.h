@@ -4,6 +4,7 @@
 #include "assets/item.h"
 #include "assets/maze.h"
 
+
 #include <array>
 #include <iostream>
 #include <vector>
@@ -16,6 +17,8 @@ public:
 
     std::array<int, 2> get_maze_size() const { return maze_size; }
     void update_maze_size();
+    Player get_player() const { return player; }
+    Maze get_maze() const { return maze; }
 
     std::vector<Item> get_level_items(int num_items);
     void run();
@@ -27,6 +30,6 @@ private:
     std::vector<Enemy> enemies;
     Player player;
     int difficulty;
-    bool complete;
+    bool level_complete;
 
 };
