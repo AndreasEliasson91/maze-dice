@@ -11,11 +11,6 @@
             - Dockerfile
             - main.py
             - requirements.txt
-        - **assets**
-            - actor.h
-            - dice.h
-            - inventory.h (?)
-            - maze.h
         - **controller**
             - __ init __.py
             - actor.py
@@ -41,6 +36,11 @@
                 - setup.py
             - __ init __.py
         - **game-engine**
+            - **assets**
+                - actor.h
+                - dice.h
+                - inventory.h (?)
+                - maze.h
             - **mechanics**
                 - battle.h
                 - highscore.h
