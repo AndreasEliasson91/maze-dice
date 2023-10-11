@@ -22,7 +22,7 @@ public:
 
     std::vector<Item> get_level_items(int num_items);
     void run();
-    void print_maze_info(std::string came_from = nullptr);
+    void print_maze_info(std::string came_from = "");
 
 private:
     std::array<int, 2> maze_size;

@@ -58,6 +58,7 @@ public:
     int get_score() const { return score; }
     void set_score(int s) { score = s; } 
     bool still_alive() const { return alive; }
+    Inventory get_inventory() const {  return inventory; }
 
     void move(std::string direction);
     bool in_battle(Cell current_pos) const { Cell::engage(current_pos); }
