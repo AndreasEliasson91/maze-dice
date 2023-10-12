@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-struct ActorPosition
+class ActorPosition
 {
 public:
     inline ActorPosition(int x, int y)
@@ -17,18 +17,21 @@ public:
         x_coord = x;
         y_coord = y;
     }
+    ~ActorPosition() = default;
+
     void update_position(std::array<int, 2> new_pos)
     {
         x_coord += new_pos[0];
         y_coord += new_pos[1];
     }
+    std::array<int, 2> get_actor_position() const { return {x_coord, y_coord}; }
 
 private:
     int x_coord, y_coord;
 
 };
 
-class Actor 
+class Actor
 {
 public:
     Actor();
@@ -39,7 +42,7 @@ public:
     void set_name(std::string name) { this->name = name; }
     int get_level() const { return level; }
     void set_level(int lev) { level = lev; }
-    ActorPosition get_position() const { return position; }
+    std::array<int, 2> get_position() const { return position.get_actor_position(); }
     void update_position(std::array<int, 2> new_pos);
 
 protected:
@@ -86,4 +89,4 @@ public:
 private:
     static constexpr std::array<int, 2> start_position = {0, 0};
 
-}
+};
