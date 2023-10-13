@@ -7,24 +7,49 @@
 GameLevel::GameLevel(int difficulty, Player &player)
     : difficulty {difficulty}, player {player}
     {
-        maze_size = {5,5};
-        enemies = {
-            Enemy("skeleton", 1, 0, 5, 0),
-            Enemy("ghoul", 2, 0, 10, 0),
-            Enemy("skeleton", 1, 0, 5, 0)
-        };  // temp enemies
-        maze = Maze(maze_size, get_level_items(2), enemies);
+        maze_size = std::make_pair(5, 5);
+        enemies = set_level_enemies(3);
+        items = set_level_items(2);
+        maze = Maze(maze_size.first, maze_size.second, enemies, items);
         level_complete = false;
     }
 
 // TODO: Implement based on instream file
-std::vector<Item> GameLevel::get_level_items(int num_items)
+std::vector<Enemy> GameLevel::set_level_enemies(int num_enemies)
+{
+    std::vector<Enemy> temp = {
+            Enemy("skeleton", 1, 0, 5, 0),
+            Enemy("ghoul", 2, 0, 10, 0),
+            Enemy("skeleton", 1, 0, 5, 0)
+        };
+    return temp;
+}
+std::vector<Item> GameLevel::set_level_items(int num_items)
 {
     std::vector<Item> temp = {
         Item("key", "golden key", {"get", "drop", "check", "investigate"}, "pouch", {0,0}),
         Item("sword", "short sword", {"get", "drop", "check", "investigate"}, "hand", {0,0})
     };
     return temp;
+}
+
+Enemy GameLevel::get_enemy_by_label(std::string label)
+{
+    for (const auto& enemy : enemies)
+    {
+        if (enemy.get_name() == label)
+            return enemy;
+    }
+    return;
+}
+Item GameLevel::get_item_by_label(std::string label)
+{
+    for (const auto& item : items)
+    {
+        if (item.get_label() == label)
+            return item;
+    }
+    return;
 }
 
 // TODO: process_user_input() merge with run()?

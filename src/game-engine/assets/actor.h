@@ -19,12 +19,12 @@ public:
     }
     ~ActorPosition() = default;
 
-    void update_position(std::array<int, 2> new_pos)
+    void update_position(std::pair<int, int> new_pos)
     {
         x_coord += new_pos[0];
         y_coord += new_pos[1];
     }
-    std::array<int, 2> get_actor_position() const { return {x_coord, y_coord}; }
+    std::pair<int, int> get_actor_position() const { return {x_coord, y_coord}; }
 
 private:
     int x_coord, y_coord;
@@ -35,15 +35,15 @@ class Actor
 {
 public:
     Actor();
-    Actor(std::string name, int ap, int dp, int hp, int level, std::array<int, 2> pos);
+    Actor(std::string name, int ap, int dp, int hp, int level, std::pair<int, int> pos);
     virtual ~Actor() = default;
 
     std::string get_name() const { return name; }
     void set_name(std::string name) { this->name = name; }
     int get_level() const { return level; }
     void set_level(int lev) { level = lev; }
-    std::array<int, 2> get_position() const { return position.get_actor_position(); }
-    void update_position(std::array<int, 2> new_pos);
+    std::pair<int, int> get_position() const { return position.get_actor_position(); }
+    void update_position(std::pair<int, int> new_pos);
 
 protected:
     std::string name;
@@ -55,7 +55,7 @@ protected:
 class Player : public Actor
 {
 public:
-    Player(std::string name = default_name, int ap = 0, int dp = 0, int hp = 20, int level = 1, std::array<int, 2> pos = start_position);
+    Player(std::string name = default_name, int ap = 0, int dp = 0, int hp = 20, int level = 1, std::pair<int, int> pos = start_position);
     virtual ~Player() = default;
 
     int get_score() const { return score; }
@@ -64,10 +64,10 @@ public:
     Inventory get_inventory() const {  return inventory; }
 
     void move(std::string direction);
-    bool in_battle(Cell current_pos) const { Cell::engage(current_pos); }
+    bool in_battle(Cell current_pos) const { return Cell::engage(current_pos); }
     void reset_and_update();
     
-    static constexpr std::array<int, 2> start_position = {0, 0};
+    static constexpr std::pair<int, int> start_position = {0, 0};
 
 protected:
     int score;
@@ -83,10 +83,10 @@ private:
 class Enemy : public Actor
 {
 public:
-    Enemy(std::string name, int ap, int dp, int hp, int level, std::array<int, 2> pos = start_position);
+    Enemy(std::string name, int ap, int dp, int hp, int level, std::pair<int, int> pos = start_position);
     virtual ~Enemy() = default;
 
 private:
-    static constexpr std::array<int, 2> start_position = {0, 0};
+    static constexpr std::pair<int, int> start_position = {0, 0};
 
 };

@@ -1,10 +1,10 @@
 #include "actor.h"
 
-Actor::Actor(std::string name, int ap, int dp, int hp, int level, std::array<int, 2> pos)
-    : name {name}, attack_points {ap}, defend_points {dp}, health_points {hp}, level {level}, position {ActorPosition(pos[0], pos[1])}
+Actor::Actor(std::string name, int ap, int dp, int hp, int level, std::pair<int, int> pos)
+    : name {name}, attack_points {ap}, defend_points {dp}, health_points {hp}, level {level}, position {ActorPosition(pos.first, pos.second)}
     { }
 
-void Actor::update_position(std::array<int, 2> new_pos)
+void Actor::update_position(std::pair<int, int> new_pos)
 {
     if (new_pos == Player::start_position)
         position = ActorPosition(0,0);
@@ -13,7 +13,7 @@ void Actor::update_position(std::array<int, 2> new_pos)
 }
 
 
-Player::Player(std::string name, int ap, int dp, int hp, int level, std::array<int, 2> pos)
+Player::Player(std::string name, int ap, int dp, int hp, int level, std::pair<int, int> pos)
     : Actor(name, ap, dp, hp, level, pos)
     {
         score = 0;
@@ -24,7 +24,7 @@ Player::Player(std::string name, int ap, int dp, int hp, int level, std::array<i
 
 void Player::move(std::string direction)
 {
-    const std::map<std::string, std::array<int, 2>> directions = {
+    const std::map<std::string, std::pair<uint8_t, uint8_t>> directions = {
         {"north", {0, -1}},
         {"south", {0, 1}},
         {"east", {1, 0}},
@@ -59,6 +59,6 @@ void Player::reset_and_update()
     }
 }
 
-Enemy::Enemy(std::string name, int ap, int dp, int hp, int level, std::array<int, 2> pos)
+Enemy::Enemy(std::string name, int ap, int dp, int hp, int level, std::pair<int, int> pos)
     : Actor(name, ap, dp, hp, level, pos)
     { }
