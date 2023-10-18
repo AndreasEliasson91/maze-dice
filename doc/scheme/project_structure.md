@@ -39,7 +39,7 @@
             - **assets**
                 - actor.h
                 - dice.h
-                - inventory.h (?)
+                - item.h
                 - maze.h
             - **mechanics**
                 - battle.h

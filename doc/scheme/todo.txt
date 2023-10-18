@@ -1,0 +1,4 @@
+* Rewrite code to C++
+* Optimize code
+* const reference and const functions
+* Pointers
