@@ -70,40 +70,40 @@ bool Inventory::item_in_inventory(Item item)
 
     return false;
 }
-void Inventory::process_item_pickup(Item item, Cell current_location)
-{
-    if (std::find(item.get_actions().start(), item.get_actions().end(), "get") != item.get_actions().end())
-    {
-        std::cout << "It seems impossible to pick up the " << item.get_description() << std::endl;
-    }
-    else if (item.get_storage_type() == "pouch" && !inventory_full(item))
-    {
-        std::cout << "You pick up the " << item.get_description() << "!" << std::endl;
-        pouch.push_back(item);
+// void Inventory::process_item_pickup(Item item, Cell current_location)
+// {
+//     if (std::find(item.get_actions().begin(), item.get_actions().end(), "get") != item.get_actions().end())
+//     {
+//         std::cout << "It seems impossible to pick up the " << item.get_description() << std::endl;
+//     }
+//     else if (item.get_storage_type() == "pouch" && !inventory_full(item))
+//     {
+//         std::cout << "You pick up the " << item.get_description() << "!" << std::endl;
+//         pouch.push_back(item);
 
-        // delete current_location.item;
-        current_location.set_got_item(false);
-    }
-    else if (item.get_storage_type() == "hand")
-    {
-        std::string hand {};
-        std::cout << "Which hand do you want to pick up the " << item.get_description() << "with: ";
-        std::cin >> hand;
+//         // delete current_location.item;
+//         current_location.set_got_item(false);
+//     }
+//     else if (item.get_storage_type() == "hand")
+//     {
+//         std::string hand {};
+//         std::cout << "Which hand do you want to pick up the " << item.get_description() << "with: ";
+//         std::cin >> hand;
 
-        if (!inventory_full(item, hand))
-        {
-            std::cout << "You picke up the " << item.get_description() << " in your " << hand << " hand!" << std::endl;
-            if hand == "right":
-                right_hand_label = item.get_label();
-            else
-                left_hand_label = item.get_label();
-        }
-    }
-    else
-    {
-        std::cout << "Your inventory is full!" << std::endl;
-    }
-}
+//         if (!inventory_full(item, hand))
+//         {
+//             std::cout << "You picke up the " << item.get_description() << " in your " << hand << " hand!" << std::endl;
+//             if (hand == "right")
+//                 right_hand_label = item.get_label();
+//             else
+//                 left_hand_label = item.get_label();
+//         }
+//     }
+//     else
+//     {
+//         std::cout << "Your inventory is full!" << std::endl;
+//     }
+// }
 // TODO: Format this nicely
 void Inventory::print_inventory() const
 {
@@ -131,17 +131,17 @@ void Inventory::print_inventory() const
     }
 }
 // TODO: Test if this work properly
-void Inventory::remove_pouch_item(std::string label)
-{
-    for (auto item = pouch.begin(); item != pouch.end();)
-    {
-        if (label == *item.get_label())
-        {
-            item = pouch.erase(item);
-        }
-        else
-        {
-            item++;
-        }
-    }
-}
+// void Inventory::remove_pouch_item(std::string label)
+// {
+//     for (auto item = pouch.begin(); item != pouch.end();)
+//     {
+//         if (label == *item.get_label())
+//         {
+//             item = pouch.erase(item);
+//         }
+//         else
+//         {
+//             item++;
+//         }
+//     }
+// }

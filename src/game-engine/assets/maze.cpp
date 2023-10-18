@@ -2,7 +2,165 @@
 
 
 // Move to a util file?
-void write_map(const Maze& maze, const std::string& out_file) {
+
+
+Cell::Cell(std::pair<int, int> xy)
+    : x {xy.first}, y {xy.second}
+    {
+        walls = {
+            {"north", true},
+            {"south", true},
+            {"east", true},
+            {"west", true}
+        };
+        // item_in_room = false;
+    }
+Cell::Cell(const Cell& other)
+    : x {other.x}, y {other.y}, walls {other.walls}
+    { }
+
+bool Cell::surrounded_by_walls() const
+{
+    for (const auto &wall : walls)
+    {
+        if (!&wall.second)
+            return false;
+    }
+    return true;
+}
+void Cell::remove_wall(Cell &other_cell, std::string wall)
+{
+    const std::map<std::string, std::string> opposite_directions = {
+        {"north", "south"},
+        {"south", "north"},
+        {"east", "west"},
+        {"west", "east"}
+    };
+
+    // std::cout << std::boolalpha << walls[wall] << " : " << other_cell.get_walls()[opposite_directions.at(wall)] << std::endl;
+    set_wall(wall, false);
+    other_cell.set_wall(opposite_directions.at(wall), false);;
+    // std::cout << walls[wall] << " : " << other_cell.get_walls()[opposite_directions.at(wall)] << std::endl;
+}
+
+
+// Maze::Maze(int num_cells_x, int num_cells_y, std::vector<Enemy> enemies, std::vector<Item> items)
+//     : num_cells_x {num_cells_x}, num_cells_y {num_cells_y}
+//     {
+//         start_x = 0;
+//         start_y = 0;
+//         maze_end = {num_cells_x - 1, num_cells_y - 1};
+
+//         maze.resize(num_cells_x, std::vector<Cell>(num_cells_y));
+//         create_maze();
+
+//         // setup_items_and_enemies(enemies, items);
+//         write_map(*this, "maze");
+//     }
+Maze::Maze(int num_cells_x, int num_cells_y, std::string out_file)
+    : num_cells_x {num_cells_x}, num_cells_y {num_cells_y}
+    {
+        start_x = 0;
+        start_y = 0;
+        maze_end = {num_cells_x - 1, num_cells_y - 1};
+
+        for (int x = 0; x < num_cells_x; x++)
+        {
+            maze.push_back(std::vector<Cell*>());
+
+            for (int y = 0; y < num_cells_y; y++)
+            {
+                maze[x].push_back(new Cell(std::make_pair(x, y)));
+            }
+        }
+        create_maze();
+
+        // setup_items_and_enemies(enemies, items);
+        write_map(*this, out_file);
+    }
+Maze::~Maze()
+{
+    for (int x = 0; x < num_cells_x; x++)
+    {
+        for (int y = 0; y < num_cells_y; y++) 
+        {
+            delete maze[x][y];
+        }
+    }
+}
+
+void Maze::create_maze()
+{
+    int total_cells {num_cells_x * num_cells_y};
+    int created_cells {0};
+    // std::vector<Cell> cell_stack;
+    std::vector<std::pair<Cell, std::string>> cell_stack;
+
+    Cell current_cell = *get_cell({start_x, start_y});
+    created_cells++;
+
+    while (created_cells < total_cells)
+    {
+        std::vector<std::pair<std::string, Cell*>> neighbours = get_valid_neighbours(current_cell);
+
+        if (neighbours.empty())
+        {
+            // if (!cell_stack.empty())
+            // {
+                current_cell = cell_stack.back().first;
+                cell_stack.pop_back();
+            // }
+            continue;
+        }
+
+        int neighbour_idx {static_cast<int>(rand() % neighbours.size())};
+        std::cout << created_cells << ": " << neighbour_idx << ", ";
+
+        std::pair<std::string, Cell*> neighbour {neighbours.at(neighbour_idx)};
+        std::string direction = neighbour.first;
+        Cell *next_cell = neighbour.second;
+
+        current_cell.remove_wall(*next_cell, direction);
+        cell_stack.push_back(std::make_pair(current_cell, direction));
+
+        current_cell = *next_cell;
+        created_cells++;
+    }
+    std::cout << std::endl;
+}
+std::vector<std::pair<std::string, Cell*>> Maze::get_valid_neighbours(const Cell &cell)
+{
+    const std::map<std::string, std::pair<int, int>> directions = {
+        {"north", {0, -1}},
+        {"south", {0, 1}},
+        {"east", {1, 0}},
+        {"west", {-1, 0}}
+    };
+
+    std::vector<std::pair<std::string, Cell*>> neighbours;
+
+    for (auto const& [direction, val] : directions)
+    {
+        int neighbour_x = cell.get_x() + val.first;
+        int neighbour_y = cell.get_y() + val.second;
+
+        if (0 <= neighbour_x && neighbour_x < num_cells_x
+            && 0 <= neighbour_y && neighbour_y < num_cells_y)
+        {
+            Cell *neighbour = get_cell({neighbour_x, neighbour_y});
+            if (neighbour->surrounded_by_walls())
+                neighbours.push_back(std::make_pair(direction, neighbour));
+        }
+
+    }
+    return neighbours;
+}
+void Maze::setup_items_and_enemies(std::vector<Enemy> enemies, std::vector<Item> items)
+{
+
+}
+
+void write_map(Maze& maze, const std::string& out_file) {
     // Define a lambda function to write a wall line to the SVG file
     auto writeWall = [](std::ofstream& wallFile, double x1, double y1, double x2, double y2) {
         wallFile << "<line x1=\"" << x1 << "\" y1=\"" << y1 << "\" x2=\"" << x2 << "\" y2=\"" << y2 << "\"/>\n";
@@ -36,16 +194,22 @@ void write_map(const Maze& maze, const std::string& out_file) {
     os << "]]></style>\n</defs>\n";
 
     // Draw the "South" and "East" walls of each cell
-    for (int x = 0; x < maze.get_num_cells_x(); ++x) {
-        for (int y = 0; y < maze.get_num_cells_y(); ++y) {
-            if (maze.get_cell({x, y}).get_walls()["south"]) {
+    for (int x = 0; x < maze.get_num_cells_x(); ++x) 
+    {
+        for (int y = 0; y < maze.get_num_cells_y(); ++y) 
+        {
+            Cell cell = *maze.get_cell({x,y});
+
+            if (cell.get_walls()["south"]) 
+            {
                 double x1 = x * scale_x;
                 double y1 = (y + 1) * scale_y;
                 double x2 = (x + 1) * scale_x;
                 double y2 = (y + 1) * scale_y;
                 writeWall(os, x1, y1, x2, y2);
             }
-            if (maze.get_cell({x, y}).get_walls()["east"]) {
+            if (cell.get_walls()["east"]) 
+            {
                 double x1 = (x + 1) * scale_x;
                 double y1 = y * scale_y;
                 double x2 = (x + 1) * scale_x;
@@ -61,121 +225,6 @@ void write_map(const Maze& maze, const std::string& out_file) {
     os << "</svg>\n";
 
     os.close();
-}
-
-
-Cell::Cell(std::pair<int, int> xy)
-    : x {xy.first}, y {xy.second}
-    {
-        walls = {
-            {"north", true},
-            {"south", true},
-            {"east", true},
-            {"west", true}
-        };
-        got_item = false;
-    }
-
-bool Cell::surrounded_by_walls() const
-{
-    for (const auto &wall : walls)
-    {
-        if (!wall.second)
-            return false;
-    }
-    return true;
-}
-void Cell::remove_wall(Cell &other_cell, std::string wall)
-{
-    const std::map<std::string, std::string> opposite_directions = {
-        {"north", "south"},
-        {"south", "north"},
-        {"east", "west"},
-        {"west", "east"}
-    };
-
-    walls.at(wall) = false;
-    other_cell.walls.at(opposite_directions.at(wall)) = false;
-}
-
-
-Maze::Maze(int num_cells_x, int num_cells_y, std::vector<Enemy> enemies, std::vector<Item> items)
-    : num_cells_x {num_cells_x}, num_cells_y {num_cells_y}
-    {
-        start_x = 0;
-        start_y = 0;
-        maze_end = {num_cells_x - 1, num_cells_y - 1};
-
-        maze.resize(num_cells_x, std::vector<Cell>(num_cells_y));
-        create_maze();
-
-        // setup_items_and_enemies(enemies, items);
-        write_map(*this, "maze");
-    }
-
-void Maze::create_maze()
-{
-    int total_cells {num_cells_x * num_cells_y}, created_cells {0};
-    std::vector<Cell> cell_stack;
-    std::vector<std::pair<std::string, Cell>> neighbours;
-
-    Cell current_cell = get_cell({start_x, start_y});
-    created_cells++;
-
-    while (created_cells < total_cells)
-    {
-        neighbours = get_valid_neighbours(current_cell);
-
-        if (neighbours.empty())
-        {
-            current_cell = cell_stack.back();
-            cell_stack.pop_back();
-            continue;
-        }
-
-        int neighbour_idx {rand() % neighbours.size()};
-        std::pair<std::string, Cell> neighbour {neighbours.at(neighbour_idx)};
-        std::string direction {neighbour.first};
-        Cell next_cell {neighbour.second};
-
-        current_cell.remove_wall(next_cell, direction);
-        cell_stack.push_back(std::make_pair(current_cell.get_x(), current_cell.get_y()));
-
-        current_cell = next_cell;
-        created_cells++;
-    }
-}
-std::vector<std::pair<std::string, Cell>> Maze::get_valid_neighbours(Cell cell)
-{
-    const std::map<std::string, std::pair<uint8_t, uint8_t>> directions = {
-        {"north", {0, -1}},
-        {"south", {0, 1}},
-        {"east", {1, 0}},
-        {"west", {-1, 0}}
-    };
-
-    std::vector<std::pair<std::string, Cell>> neighbours;
-    int neighbour_x {}, neighbour_y {};
-
-    for (auto const& [direction, val] : directions)
-    {
-        neighbour_x = cell.get_x() + val.first;
-        neighbour_y = cell.get_y() + val.second;
-
-        if (0 <= neighbour_x < num_cells_x && 0 <= neighbour_y < num_cells_y)
-        {
-            Cell neighbour = get_cell({neighbour_x, neighbour_y});
-            if (neighbour.surrounded_by_walls())
-                neighbours.push_back(std::make_pair(direction, neighbour));
-        }
-
-        return neighbours;
-    }
-
-}
-void Maze::setup_items_and_enemies(std::vector<Enemy> enemies, std::vector<Item> items)
-{
-
 }
 
 // std::vector<std::pair<int, int>> generate_unique_locations(std::vector<Enemy> enemies, std::vector<Item> items);

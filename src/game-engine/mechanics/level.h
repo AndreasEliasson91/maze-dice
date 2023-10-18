@@ -1,8 +1,8 @@
 #pragma once
 
-#include "assets/actor.h"
-#include "assets/item.h"
-#include "assets/maze.h"
+#include "../assets/actor.h"
+#include "../assets/item.h"
+#include "../assets/maze.h"
 
 
 #include <array>

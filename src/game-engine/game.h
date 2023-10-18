@@ -25,7 +25,7 @@ public:
             update_difficulty();
             game_level = GameLevel(difficulty_level, player);
             game_level.run();
-            player.update_stats();
+            player.reset_and_update();
         }
 
     }

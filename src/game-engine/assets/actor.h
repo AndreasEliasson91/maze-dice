@@ -1,8 +1,7 @@
 #pragma once
 
 #include "dice.h"
-#include "maze.h"
-#include "mechanics/inventory.h"
+#include "../mechanics/inventory.h"
 
 #include <array>
 #include <map>
@@ -21,8 +20,8 @@ public:
 
     void update_position(std::pair<int, int> new_pos)
     {
-        x_coord += new_pos[0];
-        y_coord += new_pos[1];
+        x_coord += new_pos.first;
+        y_coord += new_pos.second;
     }
     std::pair<int, int> get_actor_position() const { return {x_coord, y_coord}; }
 
@@ -34,7 +33,6 @@ private:
 class Actor
 {
 public:
-    Actor();
     Actor(std::string name, int ap, int dp, int hp, int level, std::pair<int, int> pos);
     virtual ~Actor() = default;
 
@@ -64,7 +62,7 @@ public:
     Inventory get_inventory() const {  return inventory; }
 
     void move(std::string direction);
-    bool in_battle(Cell current_pos) const { return Cell::engage(current_pos); }
+    // bool in_battle(Cell current_pos) const { return current_pos.engage(); }
     void reset_and_update();
     
     static constexpr std::pair<int, int> start_position = {0, 0};

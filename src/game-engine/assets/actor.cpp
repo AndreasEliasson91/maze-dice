@@ -14,7 +14,7 @@ void Actor::update_position(std::pair<int, int> new_pos)
 
 
 Player::Player(std::string name, int ap, int dp, int hp, int level, std::pair<int, int> pos)
-    : Actor(name, ap, dp, hp, level, pos)
+    : Actor {name, ap, dp, hp, level, pos}
     {
         score = 0;
         inventory = Inventory();
@@ -24,7 +24,7 @@ Player::Player(std::string name, int ap, int dp, int hp, int level, std::pair<in
 
 void Player::move(std::string direction)
 {
-    const std::map<std::string, std::pair<uint8_t, uint8_t>> directions = {
+    const std::map<std::string, std::pair<int, int>> directions = {
         {"north", {0, -1}},
         {"south", {0, 1}},
         {"east", {1, 0}},
@@ -60,5 +60,5 @@ void Player::reset_and_update()
 }
 
 Enemy::Enemy(std::string name, int ap, int dp, int hp, int level, std::pair<int, int> pos)
-    : Actor(name, ap, dp, hp, level, pos)
+    : Actor {name, ap, dp, hp, level, pos}
     { }

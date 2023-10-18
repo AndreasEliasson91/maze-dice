@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-static enum ValidCommands
+enum ValidCommands
 {
     go,
     get,
@@ -37,7 +37,7 @@ const std::map<std::string, std::string> opposite_directions = {
 void process_user_input(GameLevel &level)
 {
     std::string came_from {}, command {};
-    Cell current_location = level.get_maze().get_cell(level.get_player().get_position());
+    Cell* current_location = level.get_maze().get_cell(level.get_player().get_position());
     std::cout << ">> "; std::getline(std::cin, command);
 
     switch (s_mapCommands[command])
@@ -64,4 +64,5 @@ void process_user_input(GameLevel &level)
         break;
     }
 
+    delete current_location;
 }
