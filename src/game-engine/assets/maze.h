@@ -21,7 +21,7 @@ public:
     int get_x() const { return x; }
     int get_y() const { return y; }
     std::map<std::string, bool> get_walls() const { return walls; }
-    void set_wall(std::string wall, bool val) { walls[wall] = val; }
+    void set_wall(std::string wall, bool val) { this->walls[wall] = val; }
     // Enemy get_enemy() const  { return enemy; }
     // void set_enemy(Enemy en) { enemy = en; }
     // Item get_item() const  { return item; }
@@ -35,6 +35,7 @@ public:
     bool surrounded_by_walls() const;
     void remove_wall(Cell &other_cell, std::string wall);
 
+    void print_walls() const;  // Debug tool, TODO: Remove or move
 private:
     int x, y;
     std::map<std::string, bool> walls;
@@ -50,7 +51,7 @@ class Maze
 public:
     // Maze(int num_cells_x, int num_cells_y, std::vector<Enemy> enemies, std::vector<Item> items);
     Maze(int num_cells_x, int num_cells_y, std::string out_file);
-    ~Maze();;
+    ~Maze();
 
     Cell* get_cell(std::pair<int, int> pos) { return maze.at(pos.first).at(pos.second); }
     std::pair<int, int> get_maze_size() const { return maze_end; }

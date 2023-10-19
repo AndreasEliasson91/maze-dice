@@ -20,10 +20,10 @@ int main()
     // std::cout << player.get_score() << std::endl;
 
 
-    Maze maze01 = Maze(3, 3, "maze01");
-    Maze maze02 = Maze(3, 3, "maze02");
-    Maze maze03 = Maze(3, 3, "maze03");
-    Maze maze04 = Maze(3, 3, "maze04");
+    Maze maze01 = Maze(5, 5, "maze01");
+    Maze maze02 = Maze(5, 5, "maze02");
+    Maze maze03 = Maze(5, 5, "maze03");
+    Maze maze04 = Maze(5, 5, "maze04");
 
     return 0;
 }

@@ -23,7 +23,7 @@ bool Cell::surrounded_by_walls() const
 {
     for (const auto &wall : walls)
     {
-        if (!&wall.second)
+        if (!wall.second)
             return false;
     }
     return true;
@@ -37,12 +37,20 @@ void Cell::remove_wall(Cell &other_cell, std::string wall)
         {"west", "east"}
     };
 
-    // std::cout << std::boolalpha << walls[wall] << " : " << other_cell.get_walls()[opposite_directions.at(wall)] << std::endl;
     set_wall(wall, false);
     other_cell.set_wall(opposite_directions.at(wall), false);;
-    // std::cout << walls[wall] << " : " << other_cell.get_walls()[opposite_directions.at(wall)] << std::endl;
 }
 
+void Cell::print_walls() const
+{
+    std::cout << std::boolalpha;
+    std::cout << "Cell (" << get_x() << "," << get_y() << "): ";
+    for (auto &wall : walls)
+    {
+        std::cout << wall.first << ": " << wall.second << " : ";
+    }
+    std::cout << std::endl;
+}
 
 // Maze::Maze(int num_cells_x, int num_cells_y, std::vector<Enemy> enemies, std::vector<Item> items)
 //     : num_cells_x {num_cells_x}, num_cells_y {num_cells_y}
@@ -73,8 +81,8 @@ Maze::Maze(int num_cells_x, int num_cells_y, std::string out_file)
                 maze[x].push_back(new Cell(std::make_pair(x, y)));
             }
         }
-        create_maze();
 
+        create_maze();
         // setup_items_and_enemies(enemies, items);
         write_map(*this, out_file);
     }
@@ -93,40 +101,36 @@ void Maze::create_maze()
 {
     int total_cells {num_cells_x * num_cells_y};
     int created_cells {0};
-    // std::vector<Cell> cell_stack;
-    std::vector<std::pair<Cell, std::string>> cell_stack;
+    std::vector<Cell*> cell_stack;
 
-    Cell current_cell = *get_cell({start_x, start_y});
+    Cell *current_cell = get_cell({start_x, start_y});
     created_cells++;
 
     while (created_cells < total_cells)
     {
-        std::vector<std::pair<std::string, Cell*>> neighbours = get_valid_neighbours(current_cell);
+        std::vector<std::pair<std::string, Cell*>> neighbours = get_valid_neighbours(*current_cell);
 
         if (neighbours.empty())
         {
-            // if (!cell_stack.empty())
-            // {
-                current_cell = cell_stack.back().first;
-                cell_stack.pop_back();
-            // }
+            current_cell = cell_stack.back();
+            cell_stack.pop_back();
             continue;
         }
 
         int neighbour_idx {static_cast<int>(rand() % neighbours.size())};
-        std::cout << created_cells << ": " << neighbour_idx << ", ";
 
         std::pair<std::string, Cell*> neighbour {neighbours.at(neighbour_idx)};
         std::string direction = neighbour.first;
         Cell *next_cell = neighbour.second;
 
-        current_cell.remove_wall(*next_cell, direction);
-        cell_stack.push_back(std::make_pair(current_cell, direction));
+        current_cell->remove_wall(*next_cell, direction);
+        cell_stack.push_back(current_cell);
 
-        current_cell = *next_cell;
+        current_cell = next_cell;
+        next_cell = nullptr;
+
         created_cells++;
     }
-    std::cout << std::endl;
 }
 std::vector<std::pair<std::string, Cell*>> Maze::get_valid_neighbours(const Cell &cell)
 {
@@ -151,7 +155,6 @@ std::vector<std::pair<std::string, Cell*>> Maze::get_valid_neighbours(const Cell
             if (neighbour->surrounded_by_walls())
                 neighbours.push_back(std::make_pair(direction, neighbour));
         }
-
     }
     return neighbours;
 }
