@@ -1,23 +1,59 @@
 #include "maze.h"
 
 
-// Move to a util file?
-
-
 Cell::Cell(std::pair<int, int> xy)
     : x {xy.first}, y {xy.second}
-    {
-        walls = {
-            {"north", true},
-            {"south", true},
-            {"east", true},
-            {"west", true}
-        };
-        // item_in_room = false;
-    }
+{
+    walls = {
+        {"north", true},
+        {"south", true},
+        {"east", true},
+        {"west", true}
+    };
+
+    item = nullptr;
+    enemy = nullptr;
+}
+
 Cell::Cell(const Cell& other)
-    : x {other.x}, y {other.y}, walls {other.walls}
-    { }
+    : x {other.x}, y {other.y}, walls {other.walls}, enemy {nullptr}, item {nullptr}
+{
+    if (other.enemy != nullptr)
+        enemy = new Enemy(*(other.enemy));
+
+    if (other.item != nullptr)
+        item = new Item(*(other.item));   
+}
+
+Cell::Cell(Cell&& other) noexcept
+    : x(other.x), y(other.y), walls(std::move(other.walls)), item(other.item), enemy(other.enemy)
+{
+    other.item = nullptr;
+    other.enemy = nullptr;
+}
+
+Cell::~Cell()
+{
+    delete item;
+    delete enemy;
+}
+
+
+void Cell::set_enemy(std::string name, int ap, int dp, int hp, int level)
+{
+    if (enemy != nullptr)
+        delete enemy;
+
+    enemy = new Enemy(name, ap, dp, hp, level);
+}
+
+void Cell::set_item(std::string label, std::string desc, std::vector<std::string> actions, std::string storage, std::pair<int, int> pos)
+ {
+    if (item != nullptr)
+        delete item;
+
+    item = new Item(label, desc, actions, storage, pos); 
+}
 
 bool Cell::surrounded_by_walls() const
 {
@@ -28,6 +64,7 @@ bool Cell::surrounded_by_walls() const
     }
     return true;
 }
+
 void Cell::remove_wall(Cell &other_cell, std::string wall)
 {
     const std::map<std::string, std::string> opposite_directions = {
@@ -52,40 +89,30 @@ void Cell::print_walls() const
     std::cout << std::endl;
 }
 
-// Maze::Maze(int num_cells_x, int num_cells_y, std::vector<Enemy> enemies, std::vector<Item> items)
-//     : num_cells_x {num_cells_x}, num_cells_y {num_cells_y}
-//     {
-//         start_x = 0;
-//         start_y = 0;
-//         maze_end = {num_cells_x - 1, num_cells_y - 1};
 
-//         maze.resize(num_cells_x, std::vector<Cell>(num_cells_y));
-//         create_maze();
 
-//         // setup_items_and_enemies(enemies, items);
-//         write_map(*this, "maze");
-//     }
-Maze::Maze(int num_cells_x, int num_cells_y, std::string out_file)
+Maze::Maze(int num_cells_x, int num_cells_y, std::vector<std::string> enemy_ids, std::vector<std::string> item_ids)
     : num_cells_x {num_cells_x}, num_cells_y {num_cells_y}
+{
+    start_x = 0;
+    start_y = 0;
+    maze_end = {num_cells_x - 1, num_cells_y - 1};
+
+    for (int x = 0; x < num_cells_x; x++)
     {
-        start_x = 0;
-        start_y = 0;
-        maze_end = {num_cells_x - 1, num_cells_y - 1};
+        maze.push_back(std::vector<Cell*>());
 
-        for (int x = 0; x < num_cells_x; x++)
+        for (int y = 0; y < num_cells_y; y++)
         {
-            maze.push_back(std::vector<Cell*>());
-
-            for (int y = 0; y < num_cells_y; y++)
-            {
-                maze[x].push_back(new Cell(std::make_pair(x, y)));
-            }
+            maze[x].push_back(new Cell(std::make_pair(x, y)));
         }
-
-        create_maze();
-        // setup_items_and_enemies(enemies, items);
-        write_map(*this, out_file);
     }
+
+    create_maze();
+    // setup_items_and_enemies(enemy_ids, item_ids);
+    write_map(*this, "maze");
+}
+
 Maze::~Maze()
 {
     for (int x = 0; x < num_cells_x; x++)
@@ -132,6 +159,7 @@ void Maze::create_maze()
         created_cells++;
     }
 }
+
 std::vector<std::pair<std::string, Cell*>> Maze::get_valid_neighbours(const Cell &cell)
 {
     const std::map<std::string, std::pair<int, int>> directions = {
@@ -158,10 +186,13 @@ std::vector<std::pair<std::string, Cell*>> Maze::get_valid_neighbours(const Cell
     }
     return neighbours;
 }
-void Maze::setup_items_and_enemies(std::vector<Enemy> enemies, std::vector<Item> items)
+
+void Maze::setup_items_and_enemies(std::vector<std::string> enemy_ids, std::vector<std::string> item_ids)
 {
 
 }
+
+
 
 void write_map(Maze& maze, const std::string& out_file) {
     // Define a lambda function to write a wall line to the SVG file
