@@ -39,6 +39,45 @@ Cell::~Cell()
 }
 
 
+Cell& Cell::operator=(const Cell& other)
+{
+    if (this == &other)
+        return *this;
+
+    x = other.x;
+    y = other.y;
+    walls = other.walls;
+
+    if (other.item != nullptr) 
+    {
+        if (item == nullptr)
+            item = new Item(*(other.item));
+        else
+            *item = *(other.item);
+    }
+    else 
+    {
+        delete item;
+        item = nullptr;
+    }
+
+    if (other.enemy != nullptr) 
+    {
+        if (enemy == nullptr)
+            enemy = new Enemy(*(other.enemy));
+        else
+            *enemy = *(other.enemy);
+    }
+    else 
+    {
+        delete enemy;
+        enemy = nullptr;
+    }
+
+    return *this;
+}
+
+
 void Cell::set_enemy(std::string name, int ap, int dp, int hp, int level)
 {
     if (enemy != nullptr)

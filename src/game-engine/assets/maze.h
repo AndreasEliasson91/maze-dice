@@ -17,7 +17,9 @@ public:
     ~Cell();
 
     Cell(const Cell& other);
-    Cell::Cell(Cell&& other) noexcept;
+    Cell(Cell&& other) noexcept;
+
+    Cell& operator=(const Cell& other);
 
     int get_x() const { return x; }
     int get_y() const { return y; }
