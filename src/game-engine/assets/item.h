@@ -19,6 +19,20 @@ public:
     std::string get_description() const { return description; }
     std::string get_storage_type() const { return storage; }
     std::vector<std::string> get_actions() const { return actions; }
+
+    //     Item(std::string label, std::string description, std::vector<std::string> actions, std::string storage, std::pair<int, int> pos, bool container = false);
+    // ~Item();
+
+    // Item(const Item& other);
+    // Item(Item&& other) noexcept;
+
+    // Item& operator=(const Item& other);
+
+    // std::vector<std::string> get_actions() const { return actions; }
+    // std::pair<int, int> get_position() const { return position; }
+    // std::string get_info_by_key(std::string key) const;
+
+    // void update_postition(std::pair<int, int> new_pos) { position = new_pos; }
     
 private:
     std::string label, description, storage;

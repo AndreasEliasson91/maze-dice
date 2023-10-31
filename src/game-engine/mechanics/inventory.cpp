@@ -2,19 +2,28 @@
 
 
 Inventory::Inventory()
+    : pouch {nullptr}, right_hand {nullptr}, left_hand {nullptr}
+{ }
+
+Inventory::~Inventory()
 {
-    right_hand_label = "";
-    left_hand_label = "";
+    pouch->clear_pouch();
+    
+    delete pouch;
+    delete right_hand;
+    delete left_hand;
 }
 
-std::string Inventory::get_item_form_pouch(std::string label)
-{
-    for (auto &item : pouch)
-    {
-        if (label == item.get_label())
-            return item.get_description();
-    }
-}
+// TODO: Fix a boolean solution (if item_in_pouch -> return item else return error)
+// std::string Inventory::get_item_form_pouch(std::string label)
+// {
+//     for (auto &item : pouch)
+//     {
+//         if (label == item.get_label())
+//             return item.get_description();
+//     }
+//     return label + " is missing in pouch";
+// }
 // TODO: Fix all nested if-else
 // TODO: Figure out a better hand functionality 
 bool Inventory::inventory_full(Item item, std::string hand)
