@@ -1,65 +1,72 @@
 #pragma once
 
-#include "../assets/item.h"
-// #include "../assets/maze.h"
+#include "Item.h"
 
 #include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
 
-class Inventory
+class IInventory
 {
 public:
-    Inventory();
-    ~Inventory();
+    IInventory();
+    ~IInventory();
 
-    bool inventory_full(Item item, std::string hand = "");
-    bool item_in_inventory(Item item); // TODO: Rename this
-    // void process_item_pickup(Item item, Cell current_location);
-    void print_inventory() const;
+    IItem* getItemFromPouch(std::string id) const;
+    IPouch* getPouch() const { return m_Pouch; }
+    IHand* getRightHand() const { return m_RightHand; }
+    IHand* getLeftHand() const { return m_LeftHand; }
+
+    bool InventoryFull(const IItem& item, std::string hand = "");
+    bool ItemInInventory(std::string id) const;
+    // void process_item_pickup(IItem item, MCell current_location);
+    void PrintInventory() const;
 
 private:
-    Pouch* pouch;
-    Hand* right_hand;
-    Hand* left_hand;
+    IPouch* m_Pouch;
+    IHand* m_RightHand;
+    IHand* m_LeftHand;
 
 };
 
-class Hand
+class IHand
 {
 public:
-    Hand(Item* it = nullptr);
-    ~Hand();
+    IHand(IItem* it = nullptr);
+    ~IHand();
 
-    Item* get_item() const { return item; }
-    std::string get_item_label() const { return item->get_label(); }
+    IItem* getItem() const { return m_Item; }
+    std::string getItemLabel() const { return m_Item->getLabel(); }
 
-    void set_item(Item* it) { item = it; }
-    void drop_item() { item = nullptr; }
+    void setItem(IItem* it) { m_Item = it; }
+    void DropItem() { m_Item = nullptr; }
 
 private:
-    Item* item;
+    IItem* m_Item;
 
 };
-class Pouch
+
+class IPouch
 {
 public:
-    Pouch();
-    ~Pouch();
+    IPouch();
+    ~IPouch();
 
-    Item* get_item(std::string id) const;
-    std::vector<Item*> get_items() const { return items; }
-    int get_num_items() const { return items.size(); }
+    IItem* getItem(std::string id) const;
+    std::vector<IItem*> getItems() const { return m_Items; }
+    std::vector<std::string> getItemLabels() const;
+    int getNumItems() const { return m_Items.size(); }
+    int getMaxLimit() const { return m_MaxLimit; }
 
-    void add_item(Item* it);
-    void clear_pouch();
-    void remove_item(std::string id);
+    bool AddItem(IItem* it);
+    void ClearPouch();
+    bool RemoveItem(std::string id);
 
 private:
-    std::vector<Item*> items;
-    int limit;
+    std::vector<IItem*> m_Items;
+    int m_MaxLimit;
 
-    static constexpr int default_limit = 3;
+    static constexpr int DEFAULT_LIMIT = 3;
 
 };

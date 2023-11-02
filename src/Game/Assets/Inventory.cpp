@@ -1,62 +1,67 @@
-#include "inventory.h"
+#include "Inventory.h"
 
 
-Inventory::Inventory()
-    : pouch {nullptr}, right_hand {nullptr}, left_hand {nullptr}
+IInventory::IInventory()
+    : m_Pouch {nullptr}, m_RightHand {nullptr}, m_LeftHand {nullptr}
 { }
 
-Inventory::~Inventory()
+IInventory::~IInventory()
 {
-    pouch->clear_pouch();
+    m_Pouch->ClearPouch();
     
-    delete pouch;
-    delete right_hand;
-    delete left_hand;
+    delete m_Pouch;
+    delete m_RightHand;
+    delete m_LeftHand;
 }
 
-// TODO: Fix a boolean solution (if item_in_pouch -> return item else return error)
-// std::string Inventory::get_item_form_pouch(std::string label)
-// {
-//     for (auto &item : pouch)
-//     {
-//         if (label == item.get_label())
-//             return item.get_description();
-//     }
-//     return label + " is missing in pouch";
-// }
-// TODO: Fix all nested if-else
-// TODO: Figure out a better hand functionality 
-bool Inventory::inventory_full(Item item, std::string hand)
+IItem* IInventory::getItemFromPouch(std::string id) const
 {
-    if (item.get_storage_type() == "pouch" && pouch.size() >= pouch_limit)
+    if (ItemInInventory(id))
     {
-        std::cout << "Your pouch is full\nYou can't pick up " << item.get_description() 
-                  << " before you drop something from your pouch!" << std::endl;
+        if (m_RightHand->getItem()->getID() == id)
+            return m_RightHand->getItem();
+        if (m_LeftHand->getItem()->getID() == id)
+            return m_LeftHand->getItem();
+
+        return m_Pouch->getItem(id);
+    }
+
+    return nullptr;
+}
+// TODO: Fix all nested if-else
+bool IInventory::InventoryFull(const IItem& item, std::string hand)
+{
+    if (item.getType() == "pouch" && m_Pouch->getNumItems() >= m_Pouch->getMaxLimit())
+    {
+        std::cout << "Your pouch is full\nYou can't pick up " << item.getLabel() 
+                  << " before you drop something from your pouch!" << std::endl;  // TODO: Move text out from methods
         return true;
     }
-    else if (item.get_storage_type() == "hand" && hand != "")
+    else if (item.getType() == "hand" && hand != "")
     {
-        const std::vector<std::string> valid_hand_commands = {"left", "left hand", "right", "right hand"};
+        const std::vector<std::string> validHandCommands = {
+            "left", "left hand", "right", "right hand"
+        };
 
-        if (left_hand_label != "" && right_hand_label != "")
+        if (m_LeftHand != nullptr && m_RightHand != nullptr)
         {
-            std::cout << "Your hands are full\nYou can't pick up " << item.get_description() 
+            std::cout << "Your hands are full\nYou can't pick up " << item.getLabel() 
                   << " before you drop something from your hands!" << std::endl;
             return true;
         }
-        if ((hand == "left" || hand == "left hand") && left_hand_label != "")
+        if ((hand == "left" || hand == "left hand") && m_LeftHand != nullptr)
         {
-            std::cout << "Your left hand is full\nTry pick up " << item.get_description() 
+            std::cout << "Your left hand is full\nTry pick up " << item.getLabel() 
                   << " with your right hand or before you drop the item in your hand first!" << std::endl;
             return true;
         }
-        else if ((hand == "right" || hand == "right hand") && right_hand_label != "")
+        else if ((hand == "right" || hand == "right hand") && m_RightHand != nullptr)
         {
-            std::cout << "Your right hand is full\nTry pick up " << item.get_description() 
+            std::cout << "Your right hand is full\nTry pick up " << item.getLabel() 
                   << " with your left hand or before you drop the item in your hand first!" << std::endl;
             return true;
         }
-        else if (std::find(valid_hand_commands.begin(), valid_hand_commands.end(), hand) == valid_hand_commands.end())
+        else if (std::find(validHandCommands.begin(), validHandCommands.end(), hand) == validHandCommands.end())
         {
             std::cout << "Invalid command" << std::endl;
             return true;
@@ -64,22 +69,21 @@ bool Inventory::inventory_full(Item item, std::string hand)
     }
     return false;
 }
-bool Inventory::item_in_inventory(Item item)
+bool IInventory::ItemInInventory(std::string id) const
 {
-    if (right_hand_label != "" && (right_hand_label == item.get_label() || right_hand_label == item.get_description()))
-        return true;
-    if (left_hand_label != "" && (left_hand_label == item.get_label() || left_hand_label == item.get_description()))
+    if ((m_RightHand != nullptr && m_RightHand->getItem()->getID() == id) ||
+        (m_LeftHand != nullptr &&m_LeftHand->getItem()->getID() == id))
         return true;
 
-    for (const auto& it : pouch)
+    for (const auto& it : m_Pouch->getItems())
     {
-        if (it.get_description() == item.get_description())
+        if (it->getID() == id)
             return true;
     }
 
     return false;
 }
-// void Inventory::process_item_pickup(Item item, Cell current_location)
+// void IInventory::process_item_pickup(IItem item, MCell current_location)
 // {
 //     if (std::find(item.get_actions().begin(), item.get_actions().end(), "get") != item.get_actions().end())
 //     {
@@ -114,9 +118,9 @@ bool Inventory::item_in_inventory(Item item)
 //     }
 // }
 // TODO: Format this nicely
-void Inventory::print_inventory() const
+void IInventory::PrintInventory() const
 {
-    if (pouch.size() == 0 && right_hand_label != "" && left_hand_label != "")
+    if (m_Pouch->getNumItems() == 0 && m_RightHand != nullptr && m_LeftHand != nullptr)
     {
         std::cout << "Your inventory is empty" << std::endl;
     }
@@ -124,10 +128,10 @@ void Inventory::print_inventory() const
     {
         std::cout << "INVENTORY" << std::endl;
 
-        if (pouch.size() > 0)
+        if (m_Pouch->getNumItems() > 0)
         {
-            for (const auto& item : pouch)
-                std::cout << "* " << item.get_description() << std::endl;
+            for (const auto& item : m_Pouch->getItems())
+                std::cout << "* " << item->getLabel() << std::endl;
         }
         else
         {
@@ -135,22 +139,83 @@ void Inventory::print_inventory() const
         }
         std::cout << std::endl;
 
-        std::cout << "Left hand: " << left_hand_label << std::endl;
-        std::cout << "Right hand: " << right_hand_label << std::endl;
+        std::cout << "Left hand: " << m_LeftHand->getItemLabel() << std::endl;
+        std::cout << "Right hand: " << m_RightHand->getItemLabel() << std::endl;
+    }
+}
+
+IHand::IHand(IItem* item) : m_Item {item}
+{ }
+
+IHand::~IHand()
+{
+    delete m_Item;
+}
+
+
+IPouch::IPouch() : m_MaxLimit {DEFAULT_LIMIT}
+{ }
+
+IPouch::~IPouch()
+{
+    for (int i = 0; i < m_Items.size(); i++) 
+    {
+        delete m_Items[i];
+    }
+}
+
+
+std::vector<std::string> IPouch::getItemLabels() const
+{
+    std::vector<std::string> labels;
+
+    for (const auto& item : m_Items)
+        labels.push_back(item->getLabel());
+
+    return labels;
+}
+
+
+IItem* IPouch::getItem(std::string id) const
+{
+    for (auto &item : getItems())
+    {
+        if (id == item->getID())
+            return item;
+    }
+}
+
+bool IPouch::AddItem(IItem* it)
+{
+    if (m_Items.size() != getMaxLimit())
+    {
+        m_Items.push_back(it);
+        return true;
+    }
+    return false;
+}
+
+void IPouch::ClearPouch()
+{
+    for (int i = 0; i < m_Items.size(); i++) 
+    {
+        delete m_Items[i];
     }
 }
 // TODO: Test if this work properly
-// void Inventory::remove_pouch_item(std::string label)
+// bool IPouch::RemoveItem(std::string id)
 // {
-//     for (auto item = pouch.begin(); item != pouch.end();)
+//     for (auto item = m_Items.begin(); item != m_Items.end();)
 //     {
-//         if (label == *item.get_label())
+//         if (id == *item.getID())
 //         {
-//             item = pouch.erase(item);
+//             item = m_Items.erase(item);
+//             return true;
 //         }
 //         else
 //         {
 //             item++;
 //         }
 //     }
+//     return false;
 // }

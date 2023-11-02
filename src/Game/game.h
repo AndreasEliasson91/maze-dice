@@ -1,7 +1,7 @@
 #pragma once
 
-#include "assets/actor.h"
-#include "mechanics/level.h"
+#include "Assets/Character.h"
+#include "Levels/GameLevel.h"
 
 class Game 
 {
@@ -9,30 +9,33 @@ public:
     Game();
     ~Game() = default;
 
-    int get_difficulty() const { return difficulty_level; }
-    void set_difficulty(int difficulty) { difficulty_level = difficulty; }
-    int get_levels_completed() const { return levels_completed; }
-    void set_levels_completed(int levels_completed) { levels_completed = levels_completed; }
+    int getDifficulty() const { return m_DifficultyLevel; }
+    int getNumLevelsCompleted() const { return m_LevelsCompleted; }
 
-    void update_difficulty() 
+    void setDifficulty(int difficulty) { m_DifficultyLevel = difficulty; }
+    void setNumLevelsCompleted(int levCompl) { m_LevelsCompleted = levCompl; }
+
+    void updateDifficulty() 
     {
-        if (levels_completed % 5 == 0)
-            difficulty_level++;
+        if (m_LevelsCompleted % 5 == 0)
+            m_DifficultyLevel++;
     }
     void run() 
     {
-        while (player.still_alive()) {            
-            update_difficulty();
-            game_level = GameLevel(difficulty_level, player);
-            game_level.run();
-            player.reset_and_update();
+        while (m_Player.PlayerStillAlive()) {            
+            updateDifficulty();
+            m_GameLevel = GameLevel(m_DifficultyLevel, m_Player, m_MazeX, m_MazeY);
+            m_GameLevel.Run();
+            if (m_Player.PlayerStillAlive())
+                m_Player.UpdateStats();
         }
 
     }
 
 private:
-    Player player;
-    int difficulty_level, levels_completed;
-    GameLevel game_level;
+    CPlayer m_Player;
+    short int m_MazeX, m_MazeY;
+    int m_DifficultyLevel, m_LevelsCompleted;
+    GameLevel m_GameLevel;
 
 };

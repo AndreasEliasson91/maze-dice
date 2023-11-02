@@ -1,90 +1,86 @@
-#include "item.h"
+#include "Item.h"
 
 
-Item::Item(std::string label, std::string description, std::vector<std::string> actions, std::string storage, std::pair<int, int> pos, bool container)
-    : label {label}, description {description}, storage {storage}, position {pos}
+IItem::IItem(std::string id, std::string label, std::string descr, std::vector<std::string> actions, std::string type, std::pair<short int, short int> pos, bool container = false)
+    : m_ID {id}, m_Label {label}, m_Description {descr}, m_Type {type}, m_Position {pos}
 {
     for (const auto &action : actions)
-        this->actions.push_back(action);
+        m_Actions.push_back(action);
     
-    if (container) // TODO: Remove the hard-coded value
-        contains = new std::vector<Item*>;
-    else
-        contains = nullptr;
+    // if (container) // TODO: Remove the hard-coded value
+    //     m_Contains.push_back(new IItem());
 }
 
-Item::Item(const Item& other)
-    : label(other.label), description(other.description), storage(other.storage), actions(other.actions), 
-      position(other.position), container(other.container)
+IItem::IItem(const IItem& other)
+    : m_ID(other.m_ID), m_Label(other.m_Label), m_Description(other.m_Description), m_Type(other.m_Type), m_Actions(other.m_Actions), m_Position(other.m_Position)
 {
-    if (other.contains)
-    {
-        contains = new std::vector<Item*>;
+    // if (other.contains)
+    // {
+    //     contains = new std::vector<IItem*>;
 
-        for (Item* item : *(other.contains))
-            contains->push_back(new Item(*item));
-    }
-    else
-        contains = nullptr;
+    //     for (IItem* item : *(other.contains))
+    //         contains->push_back(new IItem(*item));
+    // }
+    // else
+    //     contains = nullptr;
 }
 
-Item::Item(Item&& other) noexcept
-    : label {std::move(other.label)}, description {std::move(other.description)}, storage {std::move(other.storage)},
-      actions {std::move(other.actions)}, position {std::move(other.position)}, container {other.container}, contains {other.contains}
+IItem::IItem(IItem&& other) noexcept
+    : m_ID {std::move(other.m_ID)}, m_Label {std::move(other.m_Label)}, m_Description {std::move(other.m_Description)}, m_Type {std::move(other.m_Type)}, m_Actions {std::move(other.m_Actions)}, m_Position {std::move(other.m_Position)}
 {
-    other.contains = nullptr;
+    // other.contains = nullptr;
 }
 
-Item::~Item()
+IItem::~IItem()
 {
-    if (contains)
-    {
-        for (Item* item : *contains)
-            delete item;
+    // if (contains)
+    // {
+    //     for (IItem* item : *contains)
+    //         delete item;
 
-        delete contains;
-    }
+    //     delete contains;
+    // }
 }
 
 
-Item& Item::operator=(const Item& other)
+IItem& IItem::operator=(const IItem& other)
 {
     if (this != &other)
     {
-        label = other.label;
-        description = other.description;
-        storage = other.storage;
-        actions = other.actions;
-        position = other.position;
-        container = other.container;
+        m_Label = other.m_Label;
+        m_Description = other.m_Description;
+        m_Type = other.m_Type;
+        m_Actions = other.m_Actions;
+        m_Position = other.m_Position;
+        // container = other.container;
 
-        if (other.contains)
-        {
-            contains = new std::vector<Item*>;
+    //     if (other.contains)
+    //     {
+    //         contains = new std::vector<IItem*>;
 
-            for (Item* item : *(other.contains))
-                contains->push_back(new Item(*item));
+    //         for (IItem* item : *(other.contains))
+    //             contains->push_back(new IItem(*item));
 
-        } 
-        else
-            contains = nullptr;
+    //     } 
+    //     else
+    //         contains = nullptr;
             
     }
     return *this;
 }
 
-// std::string inspect_item(const Cell &current_location, std::string label)
+// std::string inspect_item(const MCell &current_location, std::string label)
 // {
 //     if (current_location.got_item())
 //     {
-//         Item item = curre
+//         IItem item = curre
 //     }
 // }
-// void pick_up_item(Player &player, std::string label, Cell &current_location)
+// void pick_up_item(Player &player, std::string label, MCell &current_location)
 // {
 
 // }
-// void drop_item(Player &player, std::string label, Cell &current_location)
+// void drop_item(Player &player, std::string label, MCell &current_location)
 // {
 
 // }

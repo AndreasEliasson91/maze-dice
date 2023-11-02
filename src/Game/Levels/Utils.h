@@ -1,6 +1,6 @@
 #pragma once
 
-#include "level.h"
+#include "GameLevel.h"
 
 #include <iostream>
 #include <map>
@@ -17,7 +17,7 @@ enum ValidCommands
     inventory,
     quit
 };
-static std::map<std::string, ValidCommands> s_mapCommands {
+static std::map<std::string, ValidCommands> s_MapCommands {
     {"go", go},
     {"get", get},
     {"check", check},
@@ -25,7 +25,7 @@ static std::map<std::string, ValidCommands> s_mapCommands {
     {"open", open},
     {"inspect", inspect}
 };
-const std::map<std::string, std::string> opposite_directions = {
+const std::map<std::string, std::string> s_OppositeDirections = {
     {"north", "south"},
     {"south", "north"},
     {"east", "west"},
@@ -34,13 +34,13 @@ const std::map<std::string, std::string> opposite_directions = {
 
 
 // TODO: Fix this properly
-void process_user_input(GameLevel &level)
+void ProcessUserInput(GameLevel &level)
 {
-    std::string came_from {}, command {};
-    Cell* current_location = level.get_maze().get_cell(level.get_player().get_position());
+    std::string cameFrom {}, command {};
+    MCell* currentLocation = level.getMaze().getCell(level.getPlayer().getPosition());
     std::cout << ">> "; std::getline(std::cin, command);
 
-    switch (s_mapCommands[command])
+    switch (s_MapCommands[command])
     {
     case go:
         std::cout << "You go, girl!" << std::endl;
@@ -64,5 +64,5 @@ void process_user_input(GameLevel &level)
         break;
     }
 
-    delete current_location;
+    delete currentLocation;
 }

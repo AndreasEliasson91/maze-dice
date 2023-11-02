@@ -3,47 +3,37 @@
 #include <string>
 #include <vector>
 
-// TODO: Move this?
-class Item
+class IItem
 {
 public:
-    Item(std::string label, std::string description, std::vector<std::string> actions, std::string storage, std::pair<int, int> pos, bool container = false);
-    ~Item();
+    IItem( std::string id, std::string label, std::string descr, std::vector<std::string> actions, std::string type, std::pair<short int, short int> pos, bool container = false);
+    ~IItem();
 
-    Item(const Item& other);
-    Item(Item&& other) noexcept;
+    IItem(const IItem& other);
+    IItem(IItem&& other) noexcept;
 
-    Item& operator=(const Item& other);
+    IItem& operator=(const IItem& other);
 
-    std::string get_label() const { return label; }
-    std::string get_description() const { return description; }
-    std::string get_storage_type() const { return storage; }
-    std::vector<std::string> get_actions() const { return actions; }
+    std::string getID() const { return m_ID; }
+    std::string getLabel() const { return m_Label; }
+    std::string getDescription() const { return m_Description; }
+    std::string getType() const { return m_Type; }
+    std::vector<std::string> getActions() const { return m_Actions; }
 
-    //     Item(std::string label, std::string description, std::vector<std::string> actions, std::string storage, std::pair<int, int> pos, bool container = false);
-    // ~Item();
-
-    // Item(const Item& other);
-    // Item(Item&& other) noexcept;
-
-    // Item& operator=(const Item& other);
-
-    // std::vector<std::string> get_actions() const { return actions; }
-    // std::pair<int, int> get_position() const { return position; }
-    // std::string get_info_by_key(std::string key) const;
-
-    // void update_postition(std::pair<int, int> new_pos) { position = new_pos; }
+    void UpdatePosition(std::pair<short int, short int> newPos) { m_Position = newPos; }
     
 private:
-    std::string label, description, storage;
-    std::vector<std::string> actions;
-    std::pair<int, int> position;
-    bool container;
-    std::vector<Item*> *contains; // If chest etc.
+    std::string m_Label, m_Description, m_Type, m_ID;
+    std::vector<std::string> m_Actions;
+    std::pair<short int, short int> m_Position;
+
+    // TODO: Fix chest implementation (Maybe own calss with IItem inheritance?)
+    // bool m_Container;
+    // std::vector<IItem*> m_Contains; // If chest etc.
 
 };
 
 // TODO: Move this to a item_utils.h?
-// std::string inspect_item(const Cell &current_location, std::string label);
-// void pick_up_item(Player &player, std::string label, Cell &current_location);
-// void drop_item(Player &player, std::string label, Cell &current_location);
+// std::string inspect_item(const MCell &current_location, std::string label);
+// void pick_up_item(Player &player, std::string label, MCell &current_location);
+// void drop_item(Player &player, std::string label, MCell &current_location);

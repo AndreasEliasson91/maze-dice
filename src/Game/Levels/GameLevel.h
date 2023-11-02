@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../assets/actor.h"
-#include "../assets/item.h"
-#include "../assets/maze.h"
+#include "../assets/Character.h"
+#include "../assets/Item.h"
+#include "../assets/Maze.h"
 
 
 #include <array>
@@ -12,32 +12,31 @@
 class GameLevel
 {
 public:
-    GameLevel(int difficulty, Player &player);
-    ~GameLevel() = default;
+    GameLevel(int difficulty, CPlayer &player, short int sizeX, short int sizeY);
+    ~GameLevel() = default;  // TODO: When ptrs are added, implemnt this
 
-    std::pair<int, int> get_maze_size() const { return maze_size; }
-    Player get_player() const { return player; }
-    Maze get_maze() const { return maze; }
+    std::pair<int, int> getMazeSize() const { return m_MazeSize; }
+    CPlayer getPlayer() const { return m_Player; }
+    MMaze getMaze() const { return m_Maze; }
+    std::vector<CEnemy> getEnemies() const { return m_Enemies; }
+    std::vector<IItem> getItems() const { return m_Items; }
+    CEnemy getEnemyFromID(std::string id); // TODO: Move this
+    IItem getItemFromID(std::string id); // TODO: Move this
 
-    std::vector<Enemy> set_level_enemies(int num_enemies);
-    std::vector<Enemy> get_enemies() const { return enemies; }
-    std::vector<Item> set_level_items(int num_items);
-    std::vector<Item> get_items() const { return items; }
+    void updateMazeSize();
+    std::vector<CEnemy> CreateLevelEnemis(int numEnemies);
+    std::vector<IItem> CreateLevelItems(int numItems);
     
-    Enemy get_enemy_by_label(std::string label); // TODO: Move this
-    Item get_item_by_label(std::string label); // TODO: Move this
-
-    void run();
-    void print_maze_info(std::string came_from = "");
-    void update_maze_size();
+    void Run();
+    void PrintMazeInfo(std::string cameFrom = "");
 
 private:
-    std::pair<int, int> maze_size;
-    Maze maze;
-    std::vector<Enemy> enemies;
-    std::vector<Item> items;
-    Player player;
-    int difficulty;
-    bool level_complete;
+    std::pair<short int, short int> m_MazeSize;
+    MMaze m_Maze; // TODO: Make ptrs
+    std::vector<CEnemy> m_Enemies;
+    std::vector<IItem> m_Items;
+    CPlayer m_Player; // TODO: Make ptrs
+    int m_DifficultyLevel;
+    bool m_LevelComplete;
 
 };

@@ -1,52 +1,52 @@
-#include "level.h"
-#include "utils.h"
+#include "GameLevel.h"
+#include "Utils.h"
 
 // #include "controller/api.h"
 
 // TODO: std::vector<Enemy> get_enemies(int num_enemies);
-GameLevel::GameLevel(int difficulty, Player &player)
-    : difficulty {difficulty}, player {player}
-    {
-        maze_size = std::make_pair(5, 5);
-        enemies = set_level_enemies(3);
-        items = set_level_items(2);
-        maze = Maze(maze_size.first, maze_size.second, enemies, items);
-        level_complete = false;
-    }
+GameLevel::GameLevel(int difficulty, CPlayer &player, short int sizeX, short int sizeY)
+    : m_DifficultyLevel {difficulty}, m_Player {player}
+{
+    m_MazeSize = std::make_pair(sizeX, sizeY);
+    m_Enemies = CreateLevelEnemis(3);
+    m_Items = CreateLevelItems(2);
+    m_Maze = MMaze(sizeX, sizeY, m_Enemies, m_Items);
+    m_LevelComplete = false;
+}
 
 // TODO: Implement based on instream file
-std::vector<Enemy> GameLevel::set_level_enemies(int num_enemies)
+std::vector<CEnemy> GameLevel::CreateLevelEnemis(int numEnemies)
 {
-    std::vector<Enemy> temp = {
-            Enemy("skeleton", 1, 0, 5, 0),
-            Enemy("ghoul", 2, 0, 10, 0),
-            Enemy("skeleton", 1, 0, 5, 0)
+    std::vector<CEnemy> temp = {
+            CEnemy("abc123", "skeleton", 1, 0, 5, 0, {2,2}),
+            CEnemy("haffla21", "ghoul", 2, 0, 10, 0, {1, 2}),
+            CEnemy("gais231", "skeleton", 1, 0, 5, 0, {0,2})
         };
     return temp;
 }
-std::vector<Item> GameLevel::set_level_items(int num_items)
+std::vector<IItem> GameLevel::CreateLevelItems(int numItems)
 {
-    std::vector<Item> temp = {
-        Item("key", "golden key", {"get", "drop", "check", "investigate"}, "pouch", {0,0}),
-        Item("sword", "short sword", {"get", "drop", "check", "investigate"}, "hand", {0,0})
+    std::vector<IItem> temp = {
+        IItem("farsd1223", "key", "golden key", {"get", "drop", "check", "investigate"}, "pouch", {0,0}),
+        IItem("datanerd2", "sword", "short sword", {"get", "drop", "check", "investigate"}, "hand", {0,0})
     };
     return temp;
 }
 
-Enemy GameLevel::get_enemy_by_label(std::string label)
+CEnemy GameLevel::getEnemyFromID(std::string id)
 {
-    for (const auto& enemy : enemies)
+    for (const auto& enemy : m_Enemies)
     {
-        if (enemy.get_name() == label)
+        if (enemy.getID() == id)
             return enemy;
     }
     return;
 }
-Item GameLevel::get_item_by_label(std::string label)
+IItem GameLevel::getItemFromID(std::string id)
 {
-    for (const auto& item : items)
+    for (const auto& item : m_Items)
     {
-        if (item.get_label() == label)
+        if (item.getID() == id)
             return item;
     }
     return;
@@ -54,24 +54,24 @@ Item GameLevel::get_item_by_label(std::string label)
 
 // TODO: process_user_input() merge with run()?
 // TODO: Write "FOR YOUR INFORMATION..." as game tips
-void GameLevel::run()
+void GameLevel::Run()
 {
-    print_maze_info();
+    PrintMazeInfo();
     
-    while (!level_complete && player.still_alive())
-        process_user_input(*this);
+    while (!m_LevelComplete && m_Player.PlayerStillAlive())
+        ProcessUserInput(*this);
 
-    if (player.still_alive())
-        std::cout << "You enter a new maze. Your current score is " << player.get_score()
+    if (m_Player.PlayerStillAlive())
+        std::cout << "You enter a new maze. Your current score is " << m_Player.getScore()
                   << ", well done!\n\n" << "FOR YOUR INFORMATION: Your pouch will lose it's belongings, but the items in your hands will remain."
                   << "You will also gain some extra health points for your journey. Good luck!" << std::endl;
 }
 
 // TODO: Move print funcs to a output-handler
-void GameLevel::print_maze_info(std::string came_from)
+void GameLevel::PrintMazeInfo(std::string cameFrom)
 {
-    if (came_from != "")
-        std::cout << "You came from " << came_from << std::endl;
+    if (cameFrom != "")
+        std::cout << "You came from " << cameFrom << std::endl;
     
     // if (this->player.get_inventory().item_in_inventory("lantern"))
     // {

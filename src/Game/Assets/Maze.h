@@ -1,7 +1,7 @@
 #pragma once
 
-#include "actor.h"
-#include "item.h"
+#include "Character.h"
+#include "Item.h"
 
 #include <array>
 #include <fstream>
@@ -10,65 +10,65 @@
 #include <string>
 
 
-class Cell
+class MCell
 {
 public:
-    Cell(std::pair<int, int> xy);
-    ~Cell();
+    MCell(std::pair<short int, short int> xy);
+    ~MCell();
 
-    Cell(const Cell& other);
-    Cell(Cell&& other) noexcept;
+    MCell(const MCell& other);
+    MCell(MCell&& other) noexcept;
 
-    Cell& operator=(const Cell& other);
+    MCell& operator=(const MCell& other);
 
-    int get_x() const { return x; }
-    int get_y() const { return y; }
-    Enemy *get_enemy() const  { return enemy; }
-    Item *get_item() const  { return item; }
-    std::pair<int, int> get_maze_position() const { return {x, y}; }
-    std::map<std::string, bool> get_walls() const { return walls; }
+    short int getX() const { return m_X; }
+    short int getY() const { return m_Y; }
+    CEnemy *getEnemy() const  { return m_Enemy; }
+    IItem *getItem() const  { return m_Item; }
+    std::pair<short int, short int> getMazePosition() const { return {m_X, m_Y}; }
+    std::map<std::string, bool> getWalls() const { return m_Walls; }
 
-    void set_enemy(std::string name, int ap, int dp, int hp, int level);
-    void set_item(std::string label, std::string desc, std::vector<std::string> actions, std::string storage, std::pair<int, int> pos);
-    void set_position(int x, int y) { this->x = x; this->y = y; }
-    void set_wall(std::string wall, bool val) { this->walls[wall] = val; }
+    void setEnemy(std::string id, std::string name, int ap, int dp, int hp, int level, std::pair<short int, short int> pos);
+    void setItem(std::string id, std::string label, std::string descr, std::vector<std::string> actions, std::string type, std::pair<short int, short int> pos);
+    void setPosition(int x, int y) { m_X = x; m_Y = y; }
+    void setWall(std::string wall, bool val) { m_Walls[wall] = val; }
 
-    bool got_item() const { return item != nullptr; }
-    bool surrounded_by_walls() const;
-    void remove_wall(Cell &other_cell, std::string wall);
+    bool GotEnemy() const { return m_Enemy != nullptr; }
+    bool GotItem() const { return m_Item != nullptr; }
 
-    void print_walls() const;  // Debug tool, TODO: Remove or move to utils
+    bool SurroundedByWalls() const;
+    void RemoveWall(MCell &other, std::string wall);
 
 private:
-    int x, y;
-    std::map<std::string, bool> walls;
-    Item *item;
-    Enemy *enemy;
+    short int m_X, m_Y;
+    std::map<std::string, bool> m_Walls;
+    IItem* m_Item;
+    CEnemy* m_Enemy;
 
 };
 
-class Maze
+class MMaze
 {
 public:
-    Maze(int num_cells_x, int num_cells_y, std::vector<std::string> enemy_ids, std::vector<std::string> item_ids);
-    ~Maze();
+    MMaze(short int numCellsX, short int numCellsY, std::vector<CEnemy> enemies, std::vector<IItem> items);
+    ~MMaze();
 
-    Cell* get_cell(std::pair<int, int> pos) const { return maze.at(pos.first).at(pos.second); }
-    std::pair<int, int> get_maze_size() const { return maze_end; }
-    int get_num_cells_x() const { return num_cells_x; }
-    int get_num_cells_y() const { return num_cells_y; }
+    MCell* getCell(std::pair<short int, short int> pos) const { return m_Maze.at(pos.first).at(pos.second); }
+    std::pair<short int, short int> getMazeSize() const { return m_MazeEnd; }
+    short int getNumCellsX() const { return m_NumCellsX; }
+    short int getNumCellsY() const { return m_NumCellsY; }
 
-    void create_maze();
-    std::vector<std::pair<std::string, Cell*>> get_valid_neighbours(const Cell &cell);
-    void setup_items_and_enemies(std::vector<std::string> enemy_ids, std::vector<std::string> item_ids);
+    void CreateMaze();
+    std::vector<std::pair<std::string, MCell*>> getValidNeighbors(const MCell &cell);
+    void SetupEnemiesAndItems(std::vector<std::string> enemyIDs, std::vector<std::string> itemIDs);
 
 
 private:
-    int num_cells_x, num_cells_y;
-    int start_x, start_y;
-    std::pair<int, int> maze_end;
-    std::vector<std::vector<Cell*>> maze;
+    int m_NumCellsX, m_NumCellsY;
+    int m_StartX, m_StartY;
+    std::pair<short int, short int> m_MazeEnd;
+    std::vector<std::vector<MCell*>> m_Maze;
 
 };
 
-void write_map(Maze& maze, const std::string& out_file);
+void WriteMap(MMaze& maze, const std::string& outFile);
