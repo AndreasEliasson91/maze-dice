@@ -16,7 +16,6 @@ public:
     ~GameLevel() = default;
 
     std::pair<int, int> get_maze_size() const { return maze_size; }
-    void update_maze_size();
     Player get_player() const { return player; }
     Maze get_maze() const { return maze; }
 
@@ -30,6 +29,7 @@ public:
 
     void run();
     void print_maze_info(std::string came_from = "");
+    void update_maze_size();
 
 private:
     std::pair<int, int> maze_size;
