@@ -5,13 +5,12 @@
 
 // TODO: std::vector<Enemy> get_enemies(int num_enemies);
 GameLevel::GameLevel(int difficulty, CPlayer &player, short int sizeX, short int sizeY)
-    : m_DifficultyLevel {difficulty}, m_Player {player}
+    : m_DifficultyLevel {difficulty}, m_Player {player}, m_LevelComplete {false},
+    m_Maze(sizeX, sizeY, CreateLevelEnemis(3), CreateLevelItems(2))
 {
     m_MazeSize = std::make_pair(sizeX, sizeY);
     m_Enemies = CreateLevelEnemis(3);
     m_Items = CreateLevelItems(2);
-    m_Maze = MMaze(sizeX, sizeY, m_Enemies, m_Items);
-    m_LevelComplete = false;
 }
 
 // TODO: Implement based on instream file
@@ -64,28 +63,28 @@ void GameLevel::Run()
     if (m_Player.PlayerStillAlive())
         std::cout << "You enter a new maze. Your current score is " << m_Player.getScore()
                   << ", well done!\n\n" << "FOR YOUR INFORMATION: Your pouch will lose it's belongings, but the items in your hands will remain."
-                  << "You will also gain some extra health points for your journey. Good luck!" << std::endl;
+                  << "You will also gain some extra health points for your journey. Good luck!\n";
 }
 
 // TODO: Move print funcs to a output-handler
 void GameLevel::PrintMazeInfo(std::string cameFrom)
 {
     if (cameFrom != "")
-        std::cout << "You came from " << cameFrom << std::endl;
+        std::cout << "You came from " << cameFrom << "\n";
     
     // if (this->player.get_inventory().item_in_inventory("lantern"))
     // {
-    //     std::cout << "You've got the lantern. It lights up your surroundings.\n You can go: " << std::endl;
+    //     std::cout << "You've got the lantern. It lights up your surroundings.\n You can go: \n"l;
     //     for (auto &direction : this->maze.get_cell(this->player.get_position()).get_walls())
-    //         std::cout << "* " << direction << std::endl;
+    //         std::cout << "* " << direction << "\n";
     //     if (this->maze.get_cell(this->player.get_position()).got_item())
     //         std::cout << "Ther is a " << this->maze.get_cell_item(this->player.get_position()).get_description() 
-    //                   << " in here, maybe CHECK it out?" << std::endl;
+    //                   << " in here, maybe CHECK it out?"\n ;
     // }
     // else
     // {
-    //     std::cout << "The area is very dark!" << std::endl;
+    //     std::cout << "The area is very dark!\n"l;
     //     if (this->maze.get_cell(this->player.get_position()).got_item())
-    //         std::cout << "There is something in here, maybe CHECK it out?" << std::endl;
+    //         std::cout << "There is something in here, maybe CHECK it out?\n"l;
     // }
 }

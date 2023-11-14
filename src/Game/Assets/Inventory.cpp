@@ -2,8 +2,10 @@
 
 
 IInventory::IInventory()
-    : m_Pouch {nullptr}, m_RightHand {nullptr}, m_LeftHand {nullptr}
-{ }
+    : m_RightHand {nullptr}, m_LeftHand {nullptr}
+{
+    m_Pouch = new IPouch();
+}
 
 IInventory::~IInventory()
 {
@@ -14,7 +16,7 @@ IInventory::~IInventory()
     delete m_LeftHand;
 }
 
-IItem* IInventory::getItemFromPouch(std::string id) const
+const IItem* IInventory::getItemFromPouch(std::string id) const
 {
     if (ItemInInventory(id))
     {
@@ -26,7 +28,7 @@ IItem* IInventory::getItemFromPouch(std::string id) const
         return m_Pouch->getItem(id);
     }
 
-    return nullptr;
+    return nullptr;  // TODO: Prevent this, if not item in inventory then... Maybe move if item in invtory out to ProcessInput?
 }
 // TODO: Fix all nested if-else
 bool IInventory::InventoryFull(const IItem& item, std::string hand)
@@ -34,7 +36,7 @@ bool IInventory::InventoryFull(const IItem& item, std::string hand)
     if (item.getType() == "pouch" && m_Pouch->getNumItems() >= m_Pouch->getMaxLimit())
     {
         std::cout << "Your pouch is full\nYou can't pick up " << item.getLabel() 
-                  << " before you drop something from your pouch!" << std::endl;  // TODO: Move text out from methods
+                  << " before you drop something from your pouch!\n";  // TODO: Move text out from methods
         return true;
     }
     else if (item.getType() == "hand" && hand != "")
@@ -46,24 +48,24 @@ bool IInventory::InventoryFull(const IItem& item, std::string hand)
         if (m_LeftHand != nullptr && m_RightHand != nullptr)
         {
             std::cout << "Your hands are full\nYou can't pick up " << item.getLabel() 
-                  << " before you drop something from your hands!" << std::endl;
+                  << " before you drop something from your hands!\n";
             return true;
         }
         if ((hand == "left" || hand == "left hand") && m_LeftHand != nullptr)
         {
             std::cout << "Your left hand is full\nTry pick up " << item.getLabel() 
-                  << " with your right hand or before you drop the item in your hand first!" << std::endl;
+                  << " with your right hand or before you drop the item in your hand first!\n";
             return true;
         }
         else if ((hand == "right" || hand == "right hand") && m_RightHand != nullptr)
         {
             std::cout << "Your right hand is full\nTry pick up " << item.getLabel() 
-                  << " with your left hand or before you drop the item in your hand first!" << std::endl;
+                  << " with your left hand or before you drop the item in your hand first!\n";
             return true;
         }
         else if (std::find(validHandCommands.begin(), validHandCommands.end(), hand) == validHandCommands.end())
         {
-            std::cout << "Invalid command" << std::endl;
+            std::cout << "Invalid command\n";
             return true;
         }
     }
@@ -72,7 +74,7 @@ bool IInventory::InventoryFull(const IItem& item, std::string hand)
 bool IInventory::ItemInInventory(std::string id) const
 {
     if ((m_RightHand != nullptr && m_RightHand->getItem()->getID() == id) ||
-        (m_LeftHand != nullptr &&m_LeftHand->getItem()->getID() == id))
+        (m_LeftHand != nullptr && m_LeftHand->getItem()->getID() == id))
         return true;
 
     for (const auto& it : m_Pouch->getItems())
@@ -87,11 +89,11 @@ bool IInventory::ItemInInventory(std::string id) const
 // {
 //     if (std::find(item.get_actions().begin(), item.get_actions().end(), "get") != item.get_actions().end())
 //     {
-//         std::cout << "It seems impossible to pick up the " << item.get_description() << std::endl;
+//         std::cout << "It seems impossible to pick up the " << item.get_description(\n);
 //     }
 //     else if (item.get_storage_type() == "pouch" && !inventory_full(item))
 //     {
-//         std::cout << "You pick up the " << item.get_description() << "!" << std::endl;
+//         std::cout << "You pick up the " << item.get_description() << "!\n";
 //         pouch.push_back(item);
 
 //         // delete current_location.item;
@@ -105,7 +107,7 @@ bool IInventory::ItemInInventory(std::string id) const
 
 //         if (!inventory_full(item, hand))
 //         {
-//             std::cout << "You picke up the " << item.get_description() << " in your " << hand << " hand!" << std::endl;
+//             std::cout << "You picke up the " << item.get_description() << " in your " << hand << " hand!\n";
 //             if (hand == "right")
 //                 right_hand_label = item.get_label();
 //             else
@@ -114,33 +116,34 @@ bool IInventory::ItemInInventory(std::string id) const
 //     }
 //     else
 //     {
-//         std::cout << "Your inventory is full!" << std::endl;
+//         std::cout << "Your inventory is full!\n";
 //     }
 // }
+
+
 // TODO: Format this nicely
 void IInventory::PrintInventory() const
 {
-    if (m_Pouch->getNumItems() == 0 && m_RightHand != nullptr && m_LeftHand != nullptr)
+    if (m_Pouch->getNumItems() == 0 && m_RightHand == nullptr && m_LeftHand == nullptr)
     {
-        std::cout << "Your inventory is empty" << std::endl;
+        std::cout << "Your inventory is empty\n";
     }
     else
     {
-        std::cout << "INVENTORY" << std::endl;
+        std::cout << "INVENTORY\n";
 
         if (m_Pouch->getNumItems() > 0)
         {
             for (const auto& item : m_Pouch->getItems())
-                std::cout << "* " << item->getLabel() << std::endl;
+                std::cout << "* " << item->getLabel() << "\n";
         }
         else
         {
-            std::cout << "Your pouch is empty" << std::endl;
+            std::cout << "Your pouch is empty\n\n";
         }
-        std::cout << std::endl;
 
-        std::cout << "Left hand: " << m_LeftHand->getItemLabel() << std::endl;
-        std::cout << "Right hand: " << m_RightHand->getItemLabel() << std::endl;
+        std::cout << "Left hand: " << m_LeftHand->getItemLabel() << "\n";
+        std::cout << "Right hand: " << m_RightHand->getItemLabel() << "\n";
     }
 }
 
@@ -165,7 +168,7 @@ IPouch::~IPouch()
 }
 
 
-std::vector<std::string> IPouch::getItemLabels() const
+const std::vector<std::string> IPouch::getItemLabels() const
 {
     std::vector<std::string> labels;
 
@@ -176,13 +179,14 @@ std::vector<std::string> IPouch::getItemLabels() const
 }
 
 
-IItem* IPouch::getItem(std::string id) const
+const IItem* IPouch::getItem(std::string id) const
 {
     for (auto &item : getItems())
     {
         if (id == item->getID())
             return item;
     }
+    return nullptr;
 }
 
 bool IPouch::AddItem(IItem* it)
@@ -202,7 +206,7 @@ void IPouch::ClearPouch()
         delete m_Items[i];
     }
 }
-// TODO: Test if this work properly
+// TODO: Implement this!
 // bool IPouch::RemoveItem(std::string id)
 // {
 //     for (auto item = m_Items.begin(); item != m_Items.end();)

@@ -43,22 +43,22 @@ void ProcessUserInput(GameLevel &level)
     switch (s_MapCommands[command])
     {
     case go:
-        std::cout << "You go, girl!" << std::endl;
+        std::cout << "You go, girl!\n";
         break;
     case get:
-        std::cout << "You get that thingy-ma-bow!" << std::endl;
+        std::cout << "You get that thingy-ma-bow!\n";
         break;
     case check:
-        std::cout << "Check it out!" << std::endl;
+        std::cout << "Check it out!\n";
         break;
     case drop:
-        std::cout << "Drop that, all on the floor!" << std::endl;
+        std::cout << "Drop that, all on the floor!\n";
         break;
     case open:
-        std::cout << "Open up!" << std::endl;
+        std::cout << "Open up!\n";
         break;
     case inspect:
-        std::cout << "Du-du-du-dudu Inspector Gadget, Du-dudu-dudu-du-du!" << std::endl;
+        std::cout << "Du-du-du-dudu Inspector Gadget, Du-dudu-dudu-du-du!\n";
         break;
     default:
         break;

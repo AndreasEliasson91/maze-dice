@@ -1,5 +1,26 @@
 #include "Character.h"
 
+void ActorPosition::UpdatePosition(std::pair<short int, short int> newPos)
+{
+    if (newPos.first > 0 && m_XCoord > SHRT_MAX - newPos.first)
+        m_XCoord = SHRT_MAX;
+    else if (newPos.first < 0 && m_XCoord < SHRT_MIN - newPos.first)
+        m_XCoord = SHRT_MIN;
+    else
+        m_XCoord += newPos.first;
+
+    if (newPos.second > 0 && m_YCoord > SHRT_MAX - newPos.second)
+        m_YCoord = SHRT_MAX;
+    else if (newPos.second < 0 && m_YCoord < SHRT_MIN - newPos.second)
+        m_YCoord = SHRT_MIN;
+    else
+        m_YCoord += newPos.second;
+
+    m_XCoord = std::clamp<short int>(m_XCoord, 0, SHRT_MAX);
+    m_YCoord = std::clamp<short int>(m_YCoord, 0, SHRT_MAX);
+}
+
+
 CActor::CActor(std::string name, int ap, int dp, int hp, int level, std::pair<short int, short int> pos)
     : m_Name {name}, m_AttackPoints {ap}, m_DefendPoints {dp}, m_HealthPoints {hp}, m_Level {level}, m_Position {ActorPosition(pos.first, pos.second)}
 { }
@@ -7,21 +28,11 @@ CActor::CActor(std::string name, int ap, int dp, int hp, int level, std::pair<sh
 void CActor::UpdatePosition(std::pair<short int, short int> newPos)
 {
     if (newPos == START_POSITION)
-        m_Position = ActorPosition(0,0);
+        m_Position = ActorPosition(newPos.first, newPos.second);
     else
         m_Position.UpdatePosition(newPos);
 }
 
-int CActor::getStatFromKey(std::string key) const
-{
-    std::map<std::string, int> stats {
-        {"ap", m_AttackPoints},
-        {"dp", m_DefendPoints},
-        {"hp", m_HealthPoints},
-        {"level", m_Level}
-    };
-    return stats[key];
-}
 
 
 CPlayer::CPlayer(std::string name, int ap, int dp, int hp, int level, std::pair<short int, short int> pos)
@@ -41,14 +52,14 @@ CPlayer::~CPlayer()
 
 void CPlayer::Move(std::string direction)
 {
-    const std::map<std::string, std::pair<int, int>> directions = {
+    const std::map<std::string, std::pair<int, int>> DIRECTIONS = {
         {"north", {0, -1}},
         {"south", {0, 1}},
         {"east", {1, 0}},
         {"west", {-1, 0}}
     };
 
-    for (auto const& [key, val] : directions)
+    for (auto const& [key, val] : DIRECTIONS)
     {
         if (direction == key)
         {
@@ -62,8 +73,8 @@ void CPlayer::UpdateStats()
 {
     UpdatePosition({0,0});
     m_Inventory->getPouch()->ClearPouch();
-    m_Score += (50 * getStatFromKey("level"));
-    setHealthPoints(getStatFromKey("hp") + 10);
+    m_Score += (50 * getLevel());
+    setHealthPoints(getHealthPoints() + 10);
     LevelUp();
 }
 

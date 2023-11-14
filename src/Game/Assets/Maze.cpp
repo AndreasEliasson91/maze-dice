@@ -122,7 +122,7 @@ void MCell::RemoveWall(MCell &other, std::string wall)
 //     {
 //         std::cout << wall.first << ": " << wall.second << " : ";
 //     }
-//     std::cout << std::endl;
+//     std::cout << "\n";
 // }
 
 
@@ -246,7 +246,7 @@ void WriteMap(MMaze& maze, const std::string& outFile) {
     std::ofstream os(outFile + ".svg");
 
     if (!os.is_open()) {
-        std::cerr << "Failed to open output file" << std::endl;
+        std::cerr << "Failed to open output file";
         return;
     }
 
