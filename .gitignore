@@ -4,8 +4,14 @@ __pycache__/
 
 .vscode
 
+# Files
 .env
-docker-compose.yml
-
+*.yaml
 *.exe
 *.svg
+CMakeLists.txt
+
+# Directories
+bin/
+build/
+src/game/assets/maze/svg/
