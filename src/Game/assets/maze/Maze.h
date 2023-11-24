@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Character.h"
-#include "Item.h"
+#include "../character/Character.h"
+#include "../inventory/Item.h"
 
 #include <array>
 #include <fstream>

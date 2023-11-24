@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameLevel.h"
+#include "../game/levels/GameLevel.h"
 
 #include <iostream>
 #include <map>

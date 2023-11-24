@@ -1,5 +1,5 @@
 #include "GameLevel.h"
-#include "Utils.h"
+#include "../../utils/LevelUtil.h"
 
 // #include "controller/api.h"
 
@@ -39,7 +39,7 @@ CEnemy GameLevel::getEnemyFromID(std::string id)
         if (enemy.getID() == id)
             return enemy;
     }
-    return;
+    return 0;
 }
 IItem GameLevel::getItemFromID(std::string id)
 {
@@ -48,7 +48,7 @@ IItem GameLevel::getItemFromID(std::string id)
         if (item.getID() == id)
             return item;
     }
-    return;
+    return 0;
 }
 
 // TODO: process_user_input() merge with run()?

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Dice.h"
-#include "Inventory.h"
+#include "../inventory/Dice.h"
+#include "../inventory/Inventory.h"
 
 #include <algorithm>
 #include <array>
