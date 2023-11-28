@@ -2,14 +2,15 @@
 venv
 __pycache__/
 
+# Visual Studio Settings
 .vscode
+.vs
 
 # Files
 .env
 *.yaml
 *.exe
 *.svg
-CMakeLists.txt
 
 # Directories
 bin/
